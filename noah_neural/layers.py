@@ -21,6 +21,13 @@ class Network:
             out = layer(out)
         return out
 
+    def params(self):
+        params = []
+        for layer in self.layers:
+            if isinstance(layer, LinearLayer):
+                params.extend(layer.params())
+        return params
+
     def gradient_descent(self, lr):
         for layer in self.layers:
             layer.gradient_descent(lr)

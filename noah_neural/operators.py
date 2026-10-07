@@ -53,6 +53,18 @@ class ReluOp:
         # since relu is max(0, val)
         self.a.grad += (self.a.val > 0) * self.result.grad
 
+class GetItemOp:
+    # used for indexing into a tensor
+    def __init__(self, a, indices):
+        self.a = a; self.indices = indices
+        self.result = tensors.Tensor(data=a.val[indices], op=self, inputs=(self.a,))
+
+    def bprop(self):
+        # only let gradients flow through for the "chosen" indices
+        grads = np.zeros_like(self.a.val)
+        np.add.at(grads, self.indices, self.result.grad)
+        self.a.grad += grads
+
 class SumOp:
     def __init__(self, a, axis=None, keepdims=False):
         self.a = a; self.axis=axis; self.keepdims = keepdims

@@ -48,6 +48,13 @@ class Tensor:
         for tensor in reversed(order):
             tensor.op.bprop()
 
+    def detach(self):
+        return Tensor(data=self.val)
+
+    def __getitem__(self, indices):
+        op = ops.GetItemOp(self, indices)
+        return op.result
+
     def __add__(self, other):
         other = other if isinstance(other, Tensor) else Tensor(data=np.array(other))
         op = ops.AddOp(self, other)
